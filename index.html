@@ -14,10 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- FIREBASE SDK INTEGRATION -->
+    <!-- FIREBASE SDK INTEGRATION & GOOGLE AUTH -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDokhLgGe4Ib7oxUJ8zczLFWj0YJKk57Y",
@@ -30,15 +31,43 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        window.RorraxyDB = getFirestore(app);
-        window.RorraxyAddDoc = addDoc;
-        window.RorraxyCollection = collection;
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // গ্লোবালি ফাংশন ডিক্লেয়ার করা যাতে HTML onclick থেকে কল করা যায়
+        window.handleGoogleSellerVerify = async function() {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                
+                console.log("Logged in user:", user.email);
+
+                // ফায়ারবেস ডাটাবেসে সেলারের তথ্য সেভ করা
+                await addDoc(collection(db, "sellers"), {
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    createdAt: serverTimestamp(),
+                    status: "pending"
+                });
+
+                alert(`স্বাগতম, ${user.displayName}! আপনার সেলার অ্যাকাউন্ট ভেরিফিকেশন সফল হয়েছে।`);
+                // সফলভাবে লগইন হওয়ার পর অন্য কোনো পেজে রিডাইরেক্ট করতে চাইলে নিচের লাইন আনকমেন্ট করুন:
+                // window.location.href = "dashboard.html";
+
+            } catch (error) {
+                console.error("Auth Error:", error);
+                alert("গুগল ভেরিফিকেশন ব্যর্থ হয়েছে: " + error.message);
+            }
+        };
     </script>
 
     <style>
         :root {
             --bg-retail: #050505;
-            /* হোম পেজের লাক্সারি গোল্ডেন গ্রেডিয়েন্ট */
+            /* হোম পেজের লাক্সারি গোল্ডেন গ্রেডিয়েন্ট */
             --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
             --font-main: 'Poppins', sans-serif;
         }
@@ -68,7 +97,7 @@
             text-align: center;
         }
 
-        /* লোগো বড় এবং কোনো ধরণের শ্যাডো বা ইফেক্ট ছাড়া একদম পরিষ্কার */
+        /* লোগো বড় এবং কোনো ধরণের শ্যাডো বা ইফেক্ট ছাড়া একদম পরিষ্কার */
         .seller-logo-img {
             width: 140px;
             height: auto;
@@ -140,10 +169,10 @@
 <body>
 
     <div class="seller-page-container">
-        <!-- কোনো শ্যাডো বা অতিরিক্ত ইফেক্ট ছাড়া একদম স্পষ্ট ও বড় লোগো -->
+        <!-- কোনো শ্যাডো বা অতিরিক্ত ইফেক্ট ছাড়া একদম স্পষ্ট ও বড় লোগো -->
         <img src="https://pub-508ef1e45bab487aadde85a1dba202c4.r2.dev/rorraxyfree/mr%20masudar%20logo%20(3).png" alt="Rorraxy Logo" class="seller-logo-img">
         
-        <!-- ব্র্যান্ড কালার অনুযায়ী 'BECOME A SELLER' লেখা -->
+        <!-- ব্র্যান্ড কালার অনুযায়ী 'BECOME A SELLER' লেখা -->
         <h1 class="seller-sub-title">BECOME A SELLER</h1>
         
         <!-- গুগল ভেরিফিকেশন বাটন -->
@@ -153,10 +182,5 @@
         </button>
     </div>
 
-    <script>
-        function handleGoogleSellerVerify() {
-            alert('Proceeding with Google Verification for Seller Account...');
-        }
-    </script>
 </body>
 </html>
