@@ -1,1092 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MR MASUDAR ENTERPRISE | Elite Global Seller Ecosystem</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>rorraxy - become a seller</title>
     
-    <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1POhz8vb-MocaPNHg-i6nDSKwV4ky16Lc">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- প্রিকানেক্ট ও ডিএনএস অপ্টিমাইজেশন -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://pub-508ef1e45bab487aadde85a1dba202c4.r2.dev">
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
 
-    <!-- Firebase SDKs with Your Real Configuration -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- FIREBASE SDK INTEGRATION -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCvUftOHIxFCuAzivaBut1XvNLpGE-LQ-w",
-            authDomain: "mr-masudar.firebaseapp.com",
-            projectId: "mr-masudar",
-            storageBucket: "mr-masudar.firebasestorage.app",
-            messagingSenderId: "644110210393",
-            appId: "1:644110210393:web:dc756217266f0af039e848",
-            measurementId: "G-BZBCMZQ87M"
+            apiKey: "AIzaSyDokhLgGe4Ib7oxUJ8zczLFWj0YJKk57Y",
+            authDomain: "rorraxy-fcb91.firebaseapp.com",
+            projectId: "rorraxy-fcb91",
+            storageBucket: "rorraxy-fcb91.firebasestorage.app",
+            messagingSenderId: "880891394208",
+            appId: "1:880891394208:web:3bd8ccacf68ad5d53af1c5",
+            measurementId: "G-0XTRV9TPM3"
         };
+
         const app = initializeApp(firebaseConfig);
-        window.db = getFirestore(app);
-        window.auth = getAuth(app);
+        window.RorraxyDB = getFirestore(app);
+        window.RorraxyAddDoc = addDoc;
+        window.RorraxyCollection = collection;
     </script>
 
     <style>
         :root {
-            --bg-color: #030303;
-            --surface-card: #080808;
+            --bg-retail: #050505;
+            /* হোম পেজের লাক্সারি গোল্ডেন গ্রেডিয়েন্ট */
             --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            --gold-solid: #d4af37;
-            --text-white: #ffffff;
-            --text-gray: #b0b0b0;
-            --font-luxury: 'Cinzel', serif;
-            --font-body: 'Poppins', sans-serif;
+            --font-main: 'Poppins', sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-body); -webkit-tap-highlight-color: transparent; }
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg-retail) !important; 
+            color: #ffffff; 
+            font-family: var(--font-main); 
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-white);
-            min-height: 100vh;
+        /* পুরো স্ক্রিনের একদম নিখুঁত মাঝখানে সবকিছু সাজানোর লেআউট */
+        .seller-page-container {
+            width: 100%;
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
-            padding: 14px 10px;
-        }
-
-        body.dashboard-active { align-items: flex-start !important; padding-top: 20px; }
-
-        .portal-wrapper { width: 100%; max-width: 800px; }
-
-        .custom-toast { 
-            position: fixed; top: 15px; left: 50%; transform: translateX(-50%); 
-            background: #080808; border: 1px solid var(--gold-solid); 
-            color: var(--gold-solid); padding: 8px 18px; border-radius: 25px; 
-            font-size: 0.72rem; font-weight: 700; z-index: 999999; display: none; 
-            box-shadow: 0 0 15px rgba(212,175,55,0.3); 
-        }
-
-        .luxury-card {
-            background: var(--surface-card);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: 18px;
-            padding: 24px 20px;
+            padding: 20px;
+            box-sizing: border-box;
             text-align: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.85);
+        }
+
+        /* লোগো বড় এবং কোনো ধরণের শ্যাডো বা ইফেক্ট ছাড়া একদম পরিষ্কার */
+        .seller-logo-img {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 24px;
+            filter: none !important;
+            box-shadow: none !important;
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        /* হোম পেজের স্টাইলে লাক্সারি গোল্ডেন টেক্সট এবং সুষম গ্যাপ */
+        .seller-sub-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        /* গুগল ভেরিফিকেশন বাটন */
+        .google-verify-btn {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 16px 30px;
+            border-radius: 35px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 25px rgba(255, 255, 255, 0.25);
+            transition: 0.2s ease;
+            text-decoration: none;
+            text-transform: uppercase;
+            max-width: 400px;
             width: 100%;
-            position: relative;
-            margin: 0 auto;
+            box-sizing: border-box;
         }
 
-        .brand-logo {
-            width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--gold-solid);
-            object-fit: cover; margin-bottom: 10px; box-shadow: 0 0 15px rgba(212,175,55,0.35); background: #000;
+        .google-verify-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(255, 255, 255, 0.35);
         }
 
-        .brand-title-main {
-            font-family: var(--font-luxury); font-size: 1.25rem; font-weight: 900;
-            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase; margin-bottom: 2px;
+        @media (max-width: 480px) {
+            .seller-logo-img {
+                width: 115px;
+                margin-bottom: 20px;
+            }
+            .seller-sub-title {
+                font-size: 1.3rem;
+                margin-bottom: 25px;
+            }
+            .google-verify-btn {
+                font-size: 0.8rem;
+                padding: 14px 22px;
+            }
         }
-
-        .brand-subtitle {
-            color: var(--text-gray); font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase;
-            margin-bottom: 16px; font-weight: 600; font-family: var(--font-luxury);
-        }
-
-        .compliance-rules-box {
-            background: rgba(12, 12, 12, 0.95);
-            border: 1px dashed rgba(212, 175, 55, 0.4);
-            border-radius: 10px;
-            padding: 14px;
-            text-align: left;
-            margin-bottom: 16px;
-        }
-        .compliance-rules-box h4 {
-            font-size: 0.72rem; font-family: var(--font-luxury);
-            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 6px; text-transform: uppercase; font-weight: 800;
-        }
-        .compliance-rules-box ul { list-style: none; padding-left: 0; }
-        .compliance-rules-box li {
-            font-size: 0.62rem; color: var(--text-gray); margin-bottom: 5px; display: flex; align-items: flex-start; gap: 6px;
-        }
-        .compliance-rules-box li i { color: var(--gold-solid); margin-top: 2px; font-size: 0.65rem; }
-
-        .google-auth-btn {
-            width: 100%; background: #ffffff; color: #111;
-            border: 1px solid var(--gold-solid); padding: 12px 18px; border-radius: 30px; font-weight: 700;
-            font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25); transition: all 0.3s ease; text-transform: uppercase; font-family: var(--font-luxury);
-        }
-        .google-auth-btn:hover { background: var(--gold-gradient); color: #050505; }
-
-        .apply-btn {
-            display: inline-block; background: var(--gold-gradient); color: #050505; padding: 10px 20px;
-            border-radius: 20px; font-weight: 800; text-transform: uppercase; font-size: 0.7rem;
-            letter-spacing: 1px; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(212,175,55,0.25);
-            font-family: var(--font-luxury);
-        }
-
-        .form-section, .dashboard-section { display: none; text-align: left; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .full-width { grid-column: span 2; }
-        @media(max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
-        
-        .input-group label {
-            display: block; font-size: 0.6rem; background: var(--gold-gradient);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;
-            letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 700; font-family: var(--font-luxury);
-        }
-        .input-group input, .input-group select, .input-group textarea {
-            width: 100%; background: #000; border: 1px solid rgba(212,175,55,0.3); padding: 10px 12px;
-            color: #fff; border-radius: 8px; font-size: 0.78rem; outline: none;
-        }
-        .phone-group { display: flex; gap: 6px; }
-        .phone-group select { width: 120px; flex-shrink: 0; }
-
-        .dash-top-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 10px; margin-bottom: 12px;
-        }
-        .settings-gear-icon {
-            background: var(--gold-gradient); border: none; color: #000;
-            width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; cursor: pointer; font-size: 0.95rem; box-shadow: 0 0 12px rgba(212,175,55,0.3);
-        }
-
-        .dash-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 10px 0; }
-        @media(min-width: 550px) { .dash-stats-grid { grid-template-columns: repeat(4, 1fr); } }
-        .dash-stat-box {
-            background: rgba(10, 10, 10, 0.9); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 10px; padding: 10px; text-align: center;
-        }
-        .dash-stat-box span { font-size: 0.52rem; color: var(--text-gray); text-transform: uppercase; font-weight: 600; }
-        .dash-stat-box .number { font-size: 1.05rem; font-weight: 900; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 3px; display: block; font-family: var(--font-luxury); }
-
-        .animated-graph-box {
-            background: rgba(8, 8, 8, 0.95); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px; padding: 12px; margin: 12px 0;
-        }
-        .graph-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .graph-filter-select {
-            background: #000; border: 1px solid rgba(212,175,55,0.35); color: var(--gold-solid);
-            padding: 4px 8px; font-size: 0.6rem; border-radius: 6px; outline: none; font-family: var(--font-luxury);
-        }
-        .graph-bars { display: flex; align-items: flex-end; justify-content: space-around; height: 110px; border-bottom: 1px solid rgba(212,175,55,0.25); padding-top: 8px; }
-        .bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 12%; }
-        .bar { width: 16px; background: var(--gold-gradient); border-radius: 4px 4px 0 0; }
-        .bar-label { font-size: 0.55rem; color: var(--text-gray); text-transform: uppercase; font-weight: 600; }
-
-        .seller-action-toolbar {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0;
-        }
-        .seller-tool-btn {
-            background: rgba(12,12,12,0.9); border: 1px solid rgba(212,175,55,0.3); border-radius: 10px;
-            padding: 12px 8px; text-align: center; cursor: pointer; color: #fff; font-size: 0.72rem; font-weight: 700;
-            transition: 0.2s; font-family: var(--font-luxury); display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        .seller-tool-btn:hover { background: var(--gold-gradient); color: #000; border-color: transparent; }
-        .seller-tool-btn i { font-size: 1.15rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .seller-tool-btn:hover i { -webkit-text-fill-color: #000 !important; background: none !important; color: #000 !important; }
-
-        .sheet-table-wrapper {
-            max-height: 280px; overflow-y: auto; margin: 8px 0; background: rgba(8,8,8,0.85);
-            border-radius: 10px; border: 1px solid rgba(212,175,55,0.2);
-        }
-        .sheet-table { width: 100%; border-collapse: collapse; font-size: 0.68rem; }
-        .sheet-table th, .sheet-table td { padding: 9px 8px; border-bottom: 1px solid rgba(212,175,55,0.12); text-align: left; }
-        .sheet-table th {
-            background: #080808; position: sticky; top: 0; z-index: 2;
-            background-image: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-weight: 800; text-transform: uppercase; font-family: var(--font-luxury); font-size: 0.62rem;
-        }
-        .text-center { text-align: center !important; }
-
-        .settings-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 99999; padding: 12px;
-        }
-        .settings-modal-card {
-            background: var(--surface-card); border: 1.5px solid var(--gold-solid); border-radius: 16px;
-            width: 100%; max-width: 820px; max-height: 90vh; overflow-y: auto; padding: 22px; text-align: left; position: relative;
-        }
-        .modal-close-btn {
-            position: absolute; top: 12px; right: 14px; background: transparent; border: 1px solid var(--gold-solid);
-            color: var(--gold-solid); width: 28px; height: 28px; border-radius: 50%; font-size: 0.78rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        .settings-tab-nav { display: flex; gap: 6px; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 8px; margin-bottom: 12px; overflow-x: auto; }
-        .tab-btn {
-            background: transparent; border: 1px solid rgba(212,175,55,0.3); color: var(--text-gray);
-            padding: 6px 12px; border-radius: 8px; font-size: 0.58rem; font-weight: 700; cursor: pointer; text-transform: uppercase; white-space: nowrap;
-        }
-        .tab-btn.active { background: var(--gold-gradient); color: #000; border-color: transparent; }
     </style>
 </head>
 <body>
 
-    <div class="custom-toast" id="customToast">Action completed successfully!</div>
-
-    <div class="portal-wrapper">
+    <div class="seller-page-container">
+        <!-- কোনো শ্যাডো বা অতিরিক্ত ইফেক্ট ছাড়া একদম স্পষ্ট ও বড় লোগো -->
+        <img src="https://pub-508ef1e45bab487aadde85a1dba202c4.r2.dev/rorraxyfree/mr%20masudar%20logo%20(3).png" alt="Rorraxy Logo" class="seller-logo-img">
         
-        <!-- 1. Entrance Card -->
-        <div class="luxury-card" id="entranceCard">
-            <img src="https://lh3.googleusercontent.com/d/1POhz8vb-MocaPNHg-i6nDSKwV4ky16Lc" alt="Logo" class="brand-logo">
-            <h1 class="brand-title-main">MR MASUDAR ENTERPRISE</h1>
-            <p class="brand-subtitle">Global Elite Seller Ecosystem</p>
-
-            <div class="compliance-rules-box">
-                <h4><i class="fa-solid fa-triangle-exclamation"></i> Mandatory Seller Guidelines</h4>
-                <ul>
-                    <li><i class="fa-solid fa-check"></i> **Authentic Products:** Only 100% genuine items allowed. No replicas.</li>
-                    <li><i class="fa-solid fa-check"></i> **Premium Packaging:** Secure, export-grade luxury packaging mandatory.</li>
-                    <li><i class="fa-solid fa-check"></i> **3-Day Dispatch:** Must handover items to courier within 3 days.</li>
-                    <li><i class="fa-solid fa-check"></i> **Platform Commission:** 20% commission applies on successful sales (80% net to seller).</li>
-                </ul>
-            </div>
-
-            <button class="google-auth-btn" id="googleVerifyBtn" type="button">
-                <i class="fa-brands fa-google" style="color:#ea4335; font-size:1rem;"></i> Continue with Google Verify
-            </button>
-        </div>
-
-        <!-- 2. Registration Form -->
-        <div class="luxury-card form-section" id="formSection">
-            <button class="modal-close-btn" id="closeFormBtn" type="button" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h2 style="font-family:var(--font-luxury); background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align:center; margin-bottom:14px; font-size:1.1rem; text-transform:uppercase;">Store Registration</h2>
-            
-            <div class="form-grid">
-                <div class="input-group">
-                    <label>Owner Full Legal Name *</label>
-                    <input type="text" id="fullName" placeholder="MD MASUDAR RAHMAN" required>
-                </div>
-                <div class="input-group">
-                    <label>Gmail Address *</label>
-                    <input type="email" id="email" placeholder="masudar142251@gmail.com" required>
-                </div>
-                <div class="input-group">
-                    <label>Country (195+ Nations Auto-Tracked) *</label>
-                    <select id="regCountrySelect" required></select>
-                </div>
-                <div class="input-group">
-                    <label>WhatsApp Number *</label>
-                    <div class="phone-group">
-                        <select id="regDialCodeSelect"></select>
-                        <input type="tel" id="whatsapp" placeholder="1767319670" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
-                    </div>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 16px;">
-                <button class="apply-btn" id="completeRegBtn" type="button">Submit & Enter Dashboard</button>
-            </div>
-        </div>
-
-        <!-- 3. Dashboard Section -->
-        <div class="luxury-card dashboard-section" id="dashboardSection">
-            <div id="partnerWelcomeBox"></div>
-        </div>
-
-    </div>
-
-    <!-- 4. Product Gallery Modal -->
-    <div class="settings-modal-overlay" id="productGalleryModal">
-        <div class="settings-modal-card" style="max-width: 650px;">
-            <button class="modal-close-btn" onclick="closeProductGallery()" type="button"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="font-family:var(--font-luxury); background:var(--gold-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:1.05rem; margin-bottom:12px;"><i class="fa-solid fa-boxes-stacked"></i> Product Gallery</h3>
-            
-            <div style="background:#050505; border:1px solid rgba(212,175,55,0.3); padding:12px; border-radius:10px; margin-bottom:14px;">
-                <h4 style="font-size:0.68rem; color:var(--gold-solid); font-family:var(--font-luxury); margin-bottom:8px;"><i class="fa-solid fa-square-plus"></i> New Product</h4>
-                <input type="hidden" id="editProductIndex" value="-1">
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Product Name *</label>
-                        <input type="text" id="newProdName" maxlength="22" placeholder="Max 22 characters">
-                    </div>
-                    <div class="input-group">
-                        <label>Product Title *</label>
-                        <input type="text" id="newProdTitle" maxlength="25" placeholder="Max 25 characters">
-                    </div>
-                    <div class="input-group">
-                        <label>Category *</label>
-                        <select id="newProdCategory">
-                            <option>👔 FASHION (MEN)</option>
-                            <option>👗 FASHION (WOMEN)</option>
-                            <option>👶 BABY & KIDS</option>
-                            <option>🎁 LUXURY GIFTS</option>
-                            <option>🏡 HOME DECOR</option>
-                            <option>🎨 ART & CRAFT</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Stock Quantity *</label>
-                        <input type="number" id="newProdStock" placeholder="50" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                    </div>
-                    <div class="input-group">
-                        <label>Price ($) *</label>
-                        <input type="text" id="newProdPrice" placeholder="85.00">
-                    </div>
-                    <div class="input-group">
-                        <label>Color & Code *</label>
-                        <input type="text" id="newProdColor" placeholder="Golden Teak (#D4AF37)">
-                    </div>
-                    <div class="input-group full-width">
-                        <label>Description *</label>
-                        <textarea id="newProdDesc" rows="2" maxlength="155" placeholder="Max 155 words description..."></textarea>
-                    </div>
-                    <div class="input-group">
-                        <label>Image URL (FB / YouTube)</label>
-                        <input type="url" id="newProdImgUrl" placeholder="https://...">
-                    </div>
-                    <div class="input-group">
-                        <label>Short Video (YouTube Shorts)</label>
-                        <input type="url" id="newProdVidUrl" placeholder="https://youtube.com/shorts/...">
-                    </div>
-                    <div class="input-group">
-                        <label>Product Size</label>
-                        <input type="text" id="newProdSize" placeholder="40x20x30 inch">
-                    </div>
-                    <div class="input-group">
-                        <label>Packaging Size & Weight *</label>
-                        <input type="text" id="newProdWeight" placeholder="Box size & 2.5 kg">
-                    </div>
-                </div>
-                <div style="text-align:right; margin-top:10px;">
-                    <button class="apply-btn" onclick="submitNewProduct()" type="button" id="publishBtnText">Publish Product</button>
-                </div>
-            </div>
-
-            <h4 style="font-size:0.68rem; color:var(--gold-solid); font-family:var(--font-luxury); margin-bottom:6px;"><i class="fa-solid fa-table"></i> Product List</h4>
-            <div class="sheet-table-wrapper" style="max-height: 150px;">
-                <table class="sheet-table">
-                    <thead><tr><th>Product Name</th><th class="text-center">Price</th><th class="text-center">Stock</th><th class="text-center">Action</th></tr></thead>
-                    <tbody id="modalProductSheetRows"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. Settings Hub Modal (Profile, Payment, 2FA Security) -->
-    <div class="settings-modal-overlay" id="settingsModalOverlay">
-        <div class="settings-modal-card">
-            <button class="modal-close-btn" id="closeSettingsModalBtn" type="button"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="font-family:var(--font-luxury); background:var(--gold-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:1.05rem; margin-bottom:12px;"><i class="fa-solid fa-gear"></i> Seller Settings Hub</h3>
-            
-            <div class="settings-tab-nav">
-                <button class="tab-btn active" onclick="switchSettingsTab('business', this)" type="button">Profile</button>
-                <button class="tab-btn" onclick="switchSettingsTab('payment', this)" type="button">Payment</button>
-                <button class="tab-btn" onclick="switchSettingsTab('security', this)" type="button">2FA Security</button>
-            </div>
-
-            <div id="settingsTabContent"></div>
-        </div>
-    </div>
-
-    <!-- 6. Shipment Management Modal (Permanent Sheet with View Popups) -->
-    <div class="settings-modal-overlay" id="orderModalOverlay">
-        <div class="settings-modal-card" style="max-width: 820px;">
-            <button class="modal-close-btn" onclick="closeOrderModal()" type="button"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="font-family:var(--font-luxury); background:var(--gold-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:1rem; margin-bottom:12px;"><i class="fa-solid fa-truck-fast"></i> Shipment Management</h3>
-            <div class="sheet-table-wrapper" style="max-height: 360px;">
-                <table class="sheet-table" id="shipmentTableElement">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Product Details</th>
-                            <th>Customer Info</th>
-                            <th>Courier Service</th>
-                            <th>Tracking ID</th>
-                            <th class="text-center">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="shipmentModalBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 7. Dynamic Info Popups (Product & Customer Detail Viewer) -->
-    <div class="settings-modal-overlay" id="infoDetailModal">
-        <div class="settings-modal-card" style="max-width: 420px; text-align: center;">
-            <button class="modal-close-btn" onclick="closeInfoModal()" type="button"><i class="fa-solid fa-xmark"></i></button>
-            <h3 id="infoModalTitle" style="font-family:var(--font-luxury); background:var(--gold-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:0.95rem; margin-bottom:12px;">Details</h3>
-            <div id="infoModalContent" style="font-size: 0.72rem; color: var(--text-gray); text-align: left; line-height: 1.6;"></div>
-        </div>
+        <!-- ব্র্যান্ড কালার অনুযায়ী 'BECOME A SELLER' লেখা -->
+        <h1 class="seller-sub-title">BECOME A SELLER</h1>
+        
+        <!-- গুগল ভেরিফিকেশন বাটন -->
+        <button class="google-verify-btn" onclick="handleGoogleSellerVerify()">
+            <i class="fa-brands fa-google" style="color:#ea4335; font-size: 1.1rem;"></i> 
+            CONTINUE & VERIFY WITH GOOGLE
+        </button>
     </div>
 
     <script>
-        const allCountriesAndCodes = [
-            {name: "Afghanistan", dial: "+93"}, {name: "Albania", dial: "+355"}, {name: "Algeria", dial: "+213"},
-            {name: "Andorra", dial: "+376"}, {name: "Angola", dial: "+244"}, {name: "Argentina", dial: "+54"},
-            {name: "Armenia", dial: "+374"}, {name: "Australia", dial: "+61"}, {name: "Austria", dial: "+43"},
-            {name: "Azerbaijan", dial: "+994"}, {name: "Bahrain", dial: "+973"}, {name: "Bangladesh", dial: "+880"},
-            {name: "Belarus", dial: "+375"}, {name: "Belgium", dial: "+32"}, {name: "Belize", dial: "+501"},
-            {name: "Benin", dial: "+229"}, {name: "Bhutan", dial: "+975"}, {name: "Bolivia", dial: "+591"},
-            {name: "Bosnia and Herzegovina", dial: "+387"}, {name: "Botswana", dial: "+267"}, {name: "Brazil", dial: "+55"},
-            {name: "Brunei", dial: "+673"}, {name: "Bulgaria", dial: "+359"}, {name: "Burkina Faso", dial: "+226"},
-            {name: "Cambodia", dial: "+855"}, {name: "Cameroon", dial: "+237"}, {name: "Canada", dial: "+1"},
-            {name: "Cape Verde", dial: "+238"}, {name: "Chad", dial: "+235"}, {name: "Chile", dial: "+56"},
-            {name: "China", dial: "+86"}, {name: "Colombia", dial: "+57"}, {name: "Comoros", dial: "+269"},
-            {name: "Congo", dial: "+242"}, {name: "Costa Rica", dial: "+506"}, {name: "Croatia", dial: "+385"},
-            {name: "Cuba", dial: "+53"}, {name: "Cyprus", dial: "+357"}, {name: "Czech Republic", dial: "+420"},
-            {name: "Denmark", dial: "+45"}, {name: "Djibouti", dial: "+253"}, {name: "Dominican Republic", dial: "+1809"},
-            {name: "Ecuador", dial: "+593"}, {name: "Egypt", dial: "+20"}, {name: "El Salvador", dial: "+503"},
-            {name: "Estonia", dial: "+372"}, {name: "Ethiopia", dial: "+251"}, {name: "Fiji", dial: "+679"},
-            {name: "Finland", dial: "+358"}, {name: "France", dial: "+33"}, {name: "Gabon", dial: "+241"},
-            {name: "Gambia", dial: "+220"}, {name: "Georgia", dial: "+995"}, {name: "Germany", dial: "+49"},
-            {name: "Ghana", dial: "+233"}, {name: "Greece", dial: "+30"}, {name: "Guatemala", dial: "+502"},
-            {name: "Honduras", dial: "+504"}, {name: "Hong Kong", dial: "+852"}, {name: "Hungary", dial: "+36"},
-            {name: "Iceland", dial: "+354"}, {name: "India", dial: "+91"}, {name: "Indonesia", dial: "+62"},
-            {name: "Iran", dial: "+98"}, {name: "Iraq", dial: "+964"}, {name: "Ireland", dial: "+353"},
-            {name: "Israel", dial: "+972"}, {name: "Italy", dial: "+39"}, {name: "Jamaica", dial: "+1876"},
-            {name: "Japan", dial: "+81"}, {name: "Jordan", dial: "+962"}, {name: "Kazakhstan", dial: "+7"},
-            {name: "Kenya", dial: "+254"}, {name: "Kuwait", dial: "+965"}, {name: "Kyrgyzstan", dial: "+996"},
-            {name: "Laos", dial: "+856"}, {name: "Latvia", dial: "+371"}, {name: "Lebanon", dial: "+961"},
-            {name: "Libya", dial: "+218"}, {name: "Lithuania", dial: "+370"}, {name: "Luxembourg", dial: "+352"},
-            {name: "Macau", dial: "+853"}, {name: "Malaysia", dial: "+60"}, {name: "Maldives", dial: "+960"},
-            {name: "Malta", dial: "+356"}, {name: "Mauritius", dial: "+230"}, {name: "Mexico", dial: "+52"},
-            {name: "Monaco", dial: "+377"}, {name: "Mongolia", dial: "+976"}, {name: "Montenegro", dial: "+382"},
-            {name: "Morocco", dial: "+212"}, {name: "Myanmar", dial: "+95"}, {name: "Nepal", dial: "+977"},
-            {name: "Netherlands", dial: "+31"}, {name: "New Zealand", dial: "+64"}, {name: "Nicaragua", dial: "+505"},
-            {name: "Nigeria", dial: "+234"}, {name: "North Korea", dial: "+850"}, {name: "Norway", dial: "+47"},
-            {name: "Oman", dial: "+968"}, {name: "Pakistan", dial: "+92"}, {name: "Palestine", dial: "+970"},
-            {name: "Panama", dial: "+507"}, {name: "Paraguay", dial: "+595"}, {name: "Peru", dial: "+51"},
-            {name: "Philippines", dial: "+63"}, {name: "Poland", dial: "+48"}, {name: "Portugal", dial: "+351"},
-            {name: "Qatar", dial: "+974"}, {name: "Romania", dial: "+40"}, {name: "Russia", dial: "+7"},
-            {name: "Rwanda", dial: "+250"}, {name: "Saudi Arabia", dial: "+966"}, {name: "Senegal", dial: "+221"},
-            {name: "Serbia", dial: "+381"}, {name: "Singapore", dial: "+65"}, {name: "Slovakia", dial: "+421"},
-            {name: "Slovenia", dial: "+386"}, {name: "Somalia", dial: "+252"}, {name: "South Africa", dial: "+27"},
-            {name: "South Korea", dial: "+82"}, {name: "Spain", dial: "+34"}, {name: "Sri Lanka", dial: "+94"},
-            {name: "Sudan", dial: "+249"}, {name: "Sweden", dial: "+46"}, {name: "Switzerland", dial: "+41"},
-            {name: "Syria", dial: "+963"}, {name: "Taiwan", dial: "+886"}, {name: "Tajikistan", dial: "+992"},
-            {name: "Tanzania", dial: "+255"}, {name: "Thailand", dial: "+66"}, {name: "Tunisia", dial: "+216"},
-            {name: "Turkey", dial: "+90"}, {name: "Turkmenistan", dial: "+993"}, {name: "Uganda", dial: "+256"},
-            {name: "Ukraine", dial: "+380"}, {name: "United Arab Emirates", dial: "+971"}, {name: "United Kingdom", dial: "+44"},
-            {name: "United States", dial: "+1"}, {name: "Uruguay", dial: "+598"}, {name: "Uzbekistan", dial: "+998"},
-            {name: "Venezuela", dial: "+58"}, {name: "Vietnam", dial: "+84"}, {name: "Yemen", dial: "+967"},
-            {name: "Zambia", dial: "+260"}, {name: "Zimbabwe", dial: "+263"}
-        ];
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const countrySelect = document.getElementById('regCountrySelect');
-            const dialSelect = document.getElementById('regDialCodeSelect');
-            
-            if(countrySelect && dialSelect) {
-                allCountriesAndCodes.forEach(c => {
-                    let opt1 = document.createElement('option');
-                    opt1.value = c.name; opt1.textContent = c.name;
-                    countrySelect.appendChild(opt1);
-
-                    let opt2 = document.createElement('option');
-                    opt2.value = c.dial; opt2.textContent = c.dial;
-                    dialSelect.appendChild(opt2);
-                });
-
-                // Auto-detect user country and dial code via IP geolocation API
-                fetch('https://ipapi.co/json/')
-                    .then(response => response.json())
-                    .then(data => {
-                        let detectedCountry = data.country_name;
-                        let detectedDial = data.country_calling_code; 
-                        
-                        if(detectedCountry) {
-                            countrySelect.value = detectedCountry;
-                        }
-                        if(detectedDial) {
-                            if(!detectedDial.startsWith('+')) detectedDial = '+' + detectedDial;
-                            dialSelect.value = detectedDial;
-                        }
-                    })
-                    .catch(() => {
-                        countrySelect.value = "Bangladesh";
-                        dialSelect.value = "+880";
-                    });
-            }
-
-            document.getElementById('googleVerifyBtn').addEventListener('click', googleVerifyAndOpenForm);
-            document.getElementById('closeFormBtn').addEventListener('click', skipFormToDashboard);
-            document.getElementById('completeRegBtn').addEventListener('click', completeSellerRegistration);
-            document.getElementById('closeSettingsModalBtn').addEventListener('click', closeSettingsModal);
-
-            let savedJson = localStorage.getItem('mme_active_seller');
-            if(savedJson) {
-                try {
-                    window.currentSellerData = JSON.parse(savedJson);
-                    renderDashboard(window.currentSellerData);
-                } catch(e) {
-                    localStorage.removeItem('mme_active_seller');
-                }
-            }
-        });
-
-        function showToast(msg) {
-            let t = document.getElementById('customToast');
-            if(!t) return;
-            t.innerText = msg;
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 2200);
-        }
-
-        function googleVerifyAndOpenForm() {
-            let savedJson = localStorage.getItem('mme_active_seller');
-            if(savedJson) {
-                try {
-                    window.currentSellerData = JSON.parse(savedJson);
-                    renderDashboard(window.currentSellerData);
-                    showToast("Verified Successfully!");
-                    return;
-                } catch(e) {
-                    localStorage.removeItem('mme_active_seller');
-                }
-            }
-
-            document.getElementById('entranceCard').style.display = 'none';
-            document.getElementById('formSection').style.display = 'block';
-            document.getElementById('email').value = "masudar142251@gmail.com";
-            document.getElementById('fullName').value = "MR MASUDAR RAHMAN";
-            showToast("Google Verified! Complete Store Details.");
-        }
-
-        function skipFormToDashboard() {
-            let defaultSeller = {
-                id: "SEL-5622", storeName: "MR MASUDAR RAHMAN", name: "MR MASUDAR RAHMAN",
-                email: "masudar142251@gmail.com", country: "Bangladesh", whatsapp: "+8801767319670",
-                balance: 0.00, totalWithdrawn: 0.00, payoutType: 'Payoneer', payoutAccount: 'masudar142251@gmail.com', verified: false, 
-                tradeLicense: 'TRD-99281', address: 'Dhaka, Bangladesh'
-            };
-            localStorage.setItem('mme_active_seller', JSON.stringify(defaultSeller));
-            renderDashboard(defaultSeller);
-            showToast("Entered Seller Dashboard Successfully!");
-        }
-
-        function completeSellerRegistration() {
-            let name = document.getElementById('fullName').value.trim();
-            let email = document.getElementById('email').value.trim();
-            let countryName = document.getElementById('regCountrySelect').value;
-            let waCode = document.getElementById('regDialCodeSelect').value;
-            let waNum = document.getElementById('whatsapp').value.trim();
-
-            if(!name || !email || !waNum) {
-                alert("Please fill in all required fields.");
-                return;
-            }
-
-            let newSeller = {
-                id: "SEL-" + Math.floor(1000 + Math.random() * 9000),
-                storeName: name, name, email, country: countryName, whatsapp: waCode + waNum,
-                balance: 0.00, totalWithdrawn: 0.00, payoutType: 'Payoneer', payoutAccount: email, verified: false, tradeLicense: '', address: ''
-            };
-
-            localStorage.setItem('mme_active_seller', JSON.stringify(newSeller));
-            renderDashboard(newSeller);
-            showToast("Registration Successful!");
-        }
-
-        function renderDashboard(seller) {
-            window.currentSellerData = seller;
-            document.body.classList.add('dashboard-active');
-            document.getElementById('entranceCard').style.display = 'none';
-            document.getElementById('formSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'block';
-
-            let dashHtml = `
-                <div class="dash-top-bar">
-                    <div>
-                        <h3 style="background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:0; font-family:var(--font-luxury); font-size:1.05rem;">
-                            ${seller.storeName} 
-                            ${seller.verified ? '<i class="fa-solid fa-circle-check" style="color:#2ecc71; font-size:0.85rem;" title="Verified Account"></i>' : ''}
-                        </h3>
-                        <span style="font-size:0.55rem; color:var(--text-gray);">ID: ${seller.id} | ${seller.country} | 80% Net Payable</span>
-                    </div>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <button class="settings-gear-icon" onclick="openSettingsModal('business')" title="Settings" type="button"><i class="fa-solid fa-gear"></i></button>
-                        <button onclick="logoutSession()" type="button" style="background:none; border:none; color:var(--text-gray); cursor:pointer; font-size:0.6rem; text-decoration:underline;">Logout</button>
-                    </div>
-                </div>
-
-                <div class="dash-stats-grid">
-                    <div class="dash-stat-box">
-                        <span>Total Revenue</span>
-                        <span class="number">$${(seller.totalWithdrawn + seller.balance).toFixed(2)}</span>
-                    </div>
-                    <div class="dash-stat-box">
-                        <span>Pending Orders</span>
-                        <span class="number">0</span>
-                    </div>
-                    <div class="dash-stat-box">
-                        <span>Complete Orders</span>
-                        <span class="number">0</span>
-                    </div>
-                    <div class="dash-stat-box">
-                        <span>Available Balance (80%)</span>
-                        <span class="number">$${seller.balance.toFixed(2)}</span>
-                    </div>
-                </div>
-
-                <div class="animated-graph-box">
-                    <div class="graph-header-flex">
-                        <span style="font-size:0.65rem; color:var(--gold-solid); text-transform:uppercase; font-weight:700; font-family:var(--font-luxury);"><i class="fa-solid fa-chart-line"></i> Store Analytics</span>
-                        <select class="graph-filter-select" onchange="updateGraphData(this.value)">
-                            <option value="1m">Last 1 Month</option>
-                            <option value="1y">Last 1 Year</option>
-                        </select>
-                    </div>
-                    <div class="graph-bars" id="graphContainerBars">
-                        <div class="bar-col"><div class="bar" style="height: 35px;"></div><span class="bar-label">W1</span></div>
-                        <div class="bar-col"><div class="bar" style="height: 60px;"></div><span class="bar-label">W2</span></div>
-                        <div class="bar-col"><div class="bar" style="height: 45px;"></div><span class="bar-label">W3</span></div>
-                        <div class="bar-col"><div class="bar" style="height: 85px;"></div><span class="bar-label">W4</span></div>
-                    </div>
-                </div>
-
-                <div class="seller-action-toolbar">
-                    <div class="seller-tool-btn" onclick="openProductGallery()">
-                        <i class="fa-solid fa-boxes-stacked"></i> Product Gallery
-                    </div>
-                    <div class="seller-tool-btn" onclick="openShipmentManagement()">
-                        <i class="fa-solid fa-truck-fast"></i> Shipment Management
-                    </div>
-                </div>
-
-                <div style="background:#050505; border:1px solid rgba(212,175,55,0.25); padding:12px; border-radius:10px; margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <div>
-                        <span style="font-size:0.6rem; color:var(--gold-solid); font-weight:700; font-family:var(--font-luxury); display:block;">WITHDRAW FUNDS (Withdrawn: $${seller.totalWithdrawn.toFixed(2)})</span>
-                        <span style="font-size:0.52rem; color:var(--text-gray);">Req: Payout setup & Google Authenticator 2FA active</span>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <input type="text" id="withdrawAmount" placeholder="Amount ($)" style="width:90px; background:#000; border:1px solid rgba(212,175,55,0.35); padding:6px; color:#fff; border-radius:6px; font-size:0.65rem;">
-                        <button class="apply-btn" onclick="submitWithdrawRequest()" style="padding:6px 12px; font-size:0.6rem;">Withdraw</button>
-                    </div>
-                </div>
-            `;
-            document.getElementById('partnerWelcomeBox').innerHTML = dashHtml;
-        }
-
-        function openProductGallery() {
-            renderModalProductSheet();
-            document.getElementById('productGalleryModal').style.display = 'flex';
-        }
-        function closeProductGallery() { document.getElementById('productGalleryModal').style.display = 'none'; }
-
-        function renderModalProductSheet() {
-            let products = JSON.parse(localStorage.getItem('mme_seller_products')) || [
-                { name: 'Gamar Wood Table', title: 'Luxury Gamar Wood Table', price: '$85.00', stock: '25' }
-            ];
-            let tbody = document.getElementById('modalProductSheetRows');
-            if(!tbody) return;
-            tbody.innerHTML = "";
-            products.forEach((p, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${p.name}</b><br><span style="font-size:0.5rem; color:var(--text-gray);">Title: ${p.title}</span></td>
-                        <td class="text-center">${p.price}</td>
-                        <td class="text-center">${p.stock}</td>
-                        <td class="text-center">
-                            <button class="apply-btn" style="padding:2px 6px; font-size:0.5rem;" onclick="editProduct(${idx})">Edit</button>
-                            <button class="apply-btn" style="padding:2px 6px; font-size:0.5rem; background:#c0392b; color:#fff;" onclick="deleteProduct(${idx})">Del</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function submitNewProduct() {
-            let name = document.getElementById('newProdName').value.trim();
-            let title = document.getElementById('newProdTitle').value.trim();
-            let category = document.getElementById('newProdCategory').value;
-            let price = document.getElementById('newProdPrice').value.trim();
-            let stock = parseInt(document.getElementById('newProdStock').value) || 10;
-            let color = document.getElementById('newProdColor').value.trim();
-            let desc = document.getElementById('newProdDesc').value.trim();
-            let imgUrl = document.getElementById('newProdImgUrl').value.trim();
-            let vidUrl = document.getElementById('newProdVidUrl').value.trim();
-            let size = document.getElementById('newProdSize').value.trim();
-            let weight = document.getElementById('newProdWeight').value.trim();
-            let editIdx = parseInt(document.getElementById('editProductIndex').value);
-
-            if(!name || !title || !price || !desc) { alert("Please fill in all mandatory product fields."); return; }
-
-            let products = JSON.parse(localStorage.getItem('mme_seller_products')) || [
-                { name: 'Gamar Wood Table', title: 'Luxury Gamar Wood Table', price: '$85.00', stock: '25' }
-            ];
-            let prodData = { name, title, category, price: '$' + price.replace('$', ''), stock, color, desc, imgUrl, vidUrl, size, weight };
-
-            if(editIdx >= 0) {
-                products[editIdx] = prodData;
-                document.getElementById('editProductIndex').value = "-1";
-                document.getElementById('publishBtnText').innerText = "Publish Product";
-                showToast("Product Updated Successfully!");
-            } else {
-                products.push(prodData);
-                showToast("Product Published & Added to List!");
-            }
-
-            localStorage.setItem('mme_seller_products', JSON.stringify(products));
-
-            document.getElementById('newProdName').value = "";
-            document.getElementById('newProdTitle').value = "";
-            document.getElementById('newProdPrice').value = "";
-            document.getElementById('newProdStock').value = "";
-            document.getElementById('newProdColor').value = "";
-            document.getElementById('newProdDesc').value = "";
-            document.getElementById('newProdImgUrl').value = "";
-            document.getElementById('newProdVidUrl').value = "";
-            document.getElementById('newProdSize').value = "";
-            document.getElementById('newProdWeight').value = "";
-
-            renderModalProductSheet();
-        }
-
-        function editProduct(idx) {
-            let products = JSON.parse(localStorage.getItem('mme_seller_products')) || [
-                { name: 'Gamar Wood Table', title: 'Luxury Gamar Wood Table', price: '$85.00', stock: '25' }
-            ];
-            let p = products[idx];
-            document.getElementById('newProdName').value = p.name;
-            document.getElementById('newProdTitle').value = p.title;
-            document.getElementById('newProdCategory').value = p.category;
-            document.getElementById('newProdPrice').value = p.price.replace('$', '');
-            document.getElementById('newProdStock').value = p.stock;
-            document.getElementById('newProdColor').value = p.color || '';
-            document.getElementById('newProdDesc').value = p.desc || '';
-            document.getElementById('newProdImgUrl').value = p.imgUrl || '';
-            document.getElementById('newProdVidUrl').value = p.vidUrl || '';
-            document.getElementById('newProdSize').value = p.size || '';
-            document.getElementById('newProdWeight').value = p.weight || '';
-            
-            document.getElementById('editProductIndex').value = idx;
-            document.getElementById('publishBtnText').innerText = "Update Product";
-            showToast("Loaded product into form for editing.");
-        }
-
-        function deleteProduct(idx) {
-            let products = JSON.parse(localStorage.getItem('mme_seller_products')) || [];
-            products.splice(idx, 1);
-            localStorage.setItem('mme_seller_products', JSON.stringify(products));
-            renderModalProductSheet();
-            showToast("Product removed & deleted from website!");
-        }
-
-        function submitWithdrawRequest() {
-            let seller = window.currentSellerData;
-            if(!seller.verified) {
-                alert("Please complete Google Authenticator 2FA Verification in Settings before withdrawing funds.");
-                openSettingsModal('security');
-                return;
-            }
-            if(!seller.payoutAccount) {
-                alert("Please configure your Payment & Payout method in Settings first.");
-                openSettingsModal('payment');
-                return;
-            }
-
-            let amt = parseFloat(document.getElementById('withdrawAmount').value);
-            if(!amt || isNaN(amt) || amt <= 0) { alert("Please enter a valid withdrawal amount."); return; }
-            if(amt > seller.balance) { alert("Requested amount exceeds available balance."); return; }
-
-            seller.balance -= amt;
-            seller.totalWithdrawn = (seller.totalWithdrawn || 0) + amt;
-            localStorage.setItem('mme_active_seller', JSON.stringify(seller));
-            renderDashboard(seller);
-            showToast(`Withdrawal of $${amt.toFixed(2)} processed successfully!`);
-            document.getElementById('withdrawAmount').value = "";
-        }
-
-        function openShipmentManagement() {
-            let orders = JSON.parse(localStorage.getItem('mme_seller_orders')) || [
-                { orderId: 'ORD-901', time: '06 Jun, 14:25', product: 'Gamar Wood Table', price: '$85.00', net: '$68.00', img: 'https://lh3.googleusercontent.com/d/1POhz8vb-MocaPNHg-i6nDSKwV4ky16Lc', customerName: 'John Doe', customerPhone: '+123456789', customerAddr: 'New York, USA', courier: 'DHL Express', tracking: 'DHL-992817', status: 'Pending' }
-            ];
-            
-            let tbody = document.getElementById('shipmentModalBody');
-            if(!tbody) return;
-            tbody.innerHTML = "";
-            
-            orders.forEach((o, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-size:0.58rem; color:var(--text-gray); white-space:nowrap;">${o.time}</td>
-                        <td>
-                            <button class="apply-btn" style="padding:3px 8px; font-size:0.52rem;" onclick="viewProductDetail(${idx})">Product Details</button>
-                        </td>
-                        <td>
-                            <button class="apply-btn" style="padding:3px 8px; font-size:0.52rem; background:#3498db; color:#fff;" onclick="viewCustomerInfo(${idx})">View Info</button>
-                        </td>
-                        <td>
-                            <select id="courier_${idx}" onchange="checkOtherCourier(${idx})" style="background:#000; color:#fff; border:1px solid rgba(212,175,55,0.3); font-size:0.58rem; padding:4px; border-radius:4px; width:110px;">
-                                <option value="DHL Express" ${o.courier==='DHL Express'?'selected':''}>DHL Express (Global)</option>
-                                <option value="FedEx" ${o.courier==='FedEx'?'selected':''}>FedEx (Global)</option>
-                                <option value="Steadfast" ${o.courier==='Steadfast'?'selected':''}>Steadfast (BD)</option>
-                                <option value="Pathao" ${o.courier==='Pathao'?'selected':''}>Pathao (BD)</option>
-                                <option value="Others" ${o.courier==='Others'?'selected':''}>Others</option>
-                            </select>
-                            <input type="text" id="otherCourier_${idx}" placeholder="Courier Name" style="display:${o.courier==='Others'?'block':'none'}; margin-top:3px; background:#000; color:#fff; border:1px solid rgba(212,175,55,0.3); font-size:0.55rem; padding:3px; width:110px;" value="${o.otherCourier || ''}">
-                        </td>
-                        <td>
-                            <input type="text" id="tracking_${idx}" placeholder="Tracking ID" value="${o.tracking || ''}" style="background:#000; color:#fff; border:1px solid rgba(212,175,55,0.3); font-size:0.58rem; padding:4px; width:95px; border-radius:4px;">
-                        </td>
-                        <td class="text-center">
-                            <span style="font-size:0.55rem; color:${o.status==='Delivered'?'#2ecc71':(o.status==='Cancelled'?'#e74c3c':'#f39c12')}; font-weight:700; display:block; margin-bottom:4px;">${o.status}</span>
-                            <div style="display:flex; gap:3px; justify-content:center;">
-                                <button class="apply-btn" style="padding:2px 6px; font-size:0.48rem;" onclick="updateShipmentStatus(${idx}, 'Delivered')">Confirm</button>
-                                <button class="apply-btn" style="padding:2px 6px; font-size:0.48rem; background:#c0392b; color:#fff;" onclick="updateShipmentStatus(${idx}, 'Cancelled')">Cancel</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            document.getElementById('orderModalOverlay').style.display = 'flex';
-        }
-
-        function viewProductDetail(idx) {
-            let orders = JSON.parse(localStorage.getItem('mme_seller_orders')) || [
-                { orderId: 'ORD-901', product: 'Gamar Wood Table', price: '$85.00', net: '$68.00', img: 'https://lh3.googleusercontent.com/d/1POhz8vb-MocaPNHg-i6nDSKwV4ky16Lc' }
-            ];
-            let o = orders[idx] || orders[0];
-            document.getElementById('infoModalTitle').innerText = "Product Details";
-            document.getElementById('infoModalContent').innerHTML = `
-                <div style="text-align:center; margin-bottom:10px;">
-                    <img src="${o.img}" style="width:75px; height:75px; border-radius:8px; object-fit:cover; border:1px solid var(--gold-solid);">
-                </div>
-                <p><b>Product Name:</b> ${o.product}</p>
-                <p><b>Order ID:</b> ${o.orderId}</p>
-                <p><b>Price:</b> ${o.price}</p>
-                <p><b>Net Payout (80%):</b> <span style="color:#2ecc71;">${o.net}</span></p>
-            `;
-            document.getElementById('infoDetailModal').style.display = 'flex';
-        }
-
-        function viewCustomerInfo(idx) {
-            let orders = JSON.parse(localStorage.getItem('mme_seller_orders')) || [
-                { customerName: 'John Doe', customerPhone: '+123456789', customerAddr: 'New York, USA', time: '06 Jun, 14:25' }
-            ];
-            let o = orders[idx] || orders[0];
-            document.getElementById('infoModalTitle').innerText = "Customer Information";
-            document.getElementById('infoModalContent').innerHTML = `
-                <p><b>Name:</b> ${o.customerName}</p>
-                <p><b>Phone:</b> ${o.customerPhone}</p>
-                <p><b>Delivery Address:</b> ${o.customerAddr}</p>
-                <p><b>Order Time:</b> ${o.time}</p>
-            `;
-            document.getElementById('infoDetailModal').style.display = 'flex';
-        }
-
-        function closeInfoModal() { document.getElementById('infoDetailModal').style.display = 'none'; }
-
-        function checkOtherCourier(idx) {
-            let sel = document.getElementById('courier_' + idx);
-            let otherInput = document.getElementById('otherCourier_' + idx);
-            if(sel && otherInput) {
-                if(sel.value === 'Others') {
-                    otherInput.style.display = 'block';
-                } else {
-                    otherInput.style.display = 'none';
-                }
-            }
-        }
-
-        function updateShipmentStatus(index, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('mme_seller_orders')) || [
-                { net: '$68.00', status: 'Pending' }
-            ];
-            let courierSelect = document.getElementById('courier_' + index);
-            if(!courierSelect) return;
-            let courier = courierSelect.value;
-            if(courier === 'Others') {
-                let otherField = document.getElementById('otherCourier_' + index);
-                let otherName = otherField ? otherField.value.trim() : '';
-                if(otherName) courier = otherName;
-            }
-            let trackingField = document.getElementById('tracking_' + index);
-            let tracking = trackingField ? trackingField.value.trim() : '';
-
-            if(!tracking) { alert("Please enter tracking ID."); return; }
-
-            orders[index].courier = courier;
-            orders[index].tracking = tracking;
-            orders[index].status = newStatus;
-            localStorage.setItem('mme_seller_orders', JSON.stringify(orders));
-
-            if(newStatus === 'Delivered') {
-                let seller = window.currentSellerData;
-                seller.balance += 68.00;
-                localStorage.setItem('mme_active_seller', JSON.stringify(seller));
-                renderDashboard(seller);
-            }
-
-            openShipmentManagement();
-            showToast("Shipment Status: " + newStatus);
-        }
-
-        function closeOrderModal() { document.getElementById('orderModalOverlay').style.display = 'none'; }
-
-        function openSettingsModal(tabName = 'business') {
-            switchSettingsTab(tabName);
-            document.getElementById('settingsModalOverlay').style.display = 'flex';
-        }
-
-        function closeSettingsModal() { document.getElementById('settingsModalOverlay').style.display = 'none'; }
-
-        function switchSettingsTab(tab, btnElem) {
-            if(btnElem) {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btnElem.classList.add('active');
-            } else {
-                let tabs = document.querySelectorAll('.tab-btn');
-                tabs.forEach((b, idx) => {
-                    if((tab === 'business' && idx === 0) || (tab === 'payment' && idx === 1) || (tab === 'security' && idx === 2)) {
-                        b.classList.add('active');
-                    } else {
-                        b.classList.remove('active');
-                    }
-                });
-            }
-            let seller = window.currentSellerData;
-            let contentHtml = '';
-
-            if(tab === 'business') {
-                contentHtml = `
-                    <div class="input-group" style="margin-bottom:8px;">
-                        <label>Store Name:</label>
-                        <input type="text" id="setStore" value="${seller.storeName || ''}">
-                    </div>
-                    <div class="input-group" style="margin-bottom:8px;">
-                        <label>Trade License Name / Number:</label>
-                        <input type="text" id="setLicense" value="${seller.tradeLicense || ''}" placeholder="TRD-XXXXX">
-                    </div>
-                    <div class="input-group" style="margin-bottom:8px;">
-                        <label>Owner Name:</label>
-                        <input type="text" id="setName" value="${seller.name || ''}">
-                    </div>
-                    <div class="input-group" style="margin-bottom:8px;">
-                        <label>Full Address:</label>
-                        <input type="text" id="setAddress" value="${seller.address || ''}" placeholder="House, Road, City, Country">
-                    </div>
-                    <div class="input-group" style="margin-bottom:8px;">
-                        <label>WhatsApp Number:</label>
-                        <input type="text" id="setWa" value="${seller.whatsapp || ''}">
-                    </div>
-                    <div style="text-align:right; margin-top:10px;">
-                        <button onclick="saveBusinessSettings()" type="button" class="apply-btn" style="padding:7px 12px; font-size:0.58rem;">Save Info</button>
-                    </div>
-                `;
-            } else if(tab === 'payment') {
-                let isPayoneer = (seller.payoutType === 'Payoneer');
-                contentHtml = `
-                    <div class="input-group" style="margin-bottom:10px;">
-                        <label>Payment Method:</label>
-                        <select id="setPayType" onchange="togglePayoutField(this.value)">
-                            <option value="Payoneer" ${isPayoneer?'selected':''}>Payoneer</option>
-                            <option value="bKash" ${!isPayoneer?'selected':''}>bKash</option>
-                        </select>
-                    </div>
-                    <div class="input-group" id="payoutFieldContainer" style="margin-bottom:10px;">
-                        <label id="payoutLabel">${isPayoneer ? 'Payoneer Email Address:' : 'bKash Mobile Number:'}</label>
-                        <input type="text" id="setPayAcc" value="${seller.payoutAccount || ''}" placeholder="${isPayoneer ? 'payoneer@gmail.com' : '017XXXXXXXX'}">
-                    </div>
-                    <div style="text-align:right; margin-top:10px;">
-                        <button onclick="savePaymentSettings()" type="button" class="apply-btn" style="padding:7px 12px; font-size:0.58rem;">Save Info</button>
-                    </div>
-                `;
-            } else if(tab === 'security') {
-                let isVerified = seller.verified;
-                contentHtml = `
-                    <div style="text-align:center; padding:4px;">
-                        <p style="font-size:0.65rem; color: ${isVerified ? '#2ecc71' : '#e67e22'}; margin-bottom:8px; font-weight:700;">
-                            Status: ${isVerified ? 'Active & Verified <i class="fa-solid fa-circle-check" style="font-size:1rem; vertical-align:middle;"></i>' : 'Disabled (Required for Payouts)'}
-                        </p>
-                        ${!isVerified ? `
-                            <p style="font-size:0.62rem; color:var(--gold-solid); margin-bottom:8px; font-family:var(--font-luxury); font-weight:700;">Scan QR Code using Google Authenticator App</p>
-                            <div style="background:#fff; width:120px; height:120px; margin:0 auto 6px auto; padding:6px; border-radius:8px; display:flex; align-items:center; justify-content:center;" id="qrcodeContainer"></div>
-                            <p style="font-size:0.55rem; color:var(--text-gray); margin-bottom:5px;">Key: <span style="color:var(--gold-solid);">JBSWY3DPEHPK3PXP</span></p>
-                            <div class="input-group" style="max-width:220px; margin:0 auto 8px auto;">
-                                <label>Enter 6-digit Code:</label>
-                                <input type="text" id="authCodeInput" placeholder="123456" maxlength="6" style="text-align:center; letter-spacing:2px; font-size:0.75rem;">
-                            </div>
-                            <button onclick="verifyTwoStepAuth()" type="button" class="apply-btn" style="padding:7px 14px; font-size:0.58rem;">Verify & Enable</button>
-                        ` : `
-                            <div style="padding:15px 0;">
-                                <i class="fa-solid fa-shield-halved" style="font-size:45px; background:var(--gold-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; display:block;"></i>
-                                <p style="font-size:0.62rem; color:var(--text-gray);">Your account is fully secured with Google Authenticator 2FA.</p>
-                            </div>
-                        `}
-                    </div>
-                `;
-            }
-            document.getElementById('settingsTabContent').innerHTML = contentHtml;
-            
-            if(tab === 'security' && !seller.verified) {
-                setTimeout(() => {
-                    let container = document.getElementById('qrcodeContainer');
-                    if(container) {
-                        container.innerHTML = "";
-                        new QRCode(container, {
-                            text: "otpauth://totp/MRMASUDAR:seller?secret=JBSWY3DPEHPK3PXP&issuer=MRMASUDAR",
-                            width: 108,
-                            height: 108
-                        });
-                    }
-                }, 100);
-            }
-        }
-
-        function togglePayoutField(method) {
-            let label = document.getElementById('payoutLabel');
-            let input = document.getElementById('setPayAcc');
-            if(label && input) {
-                if(method === 'bKash') {
-                    label.innerText = "bKash Mobile Number:";
-                    input.placeholder = "017XXXXXXXX";
-                } else {
-                    label.innerText = "Payoneer Email Address:";
-                    input.placeholder = "payoneer@gmail.com";
-                }
-            }
-        }
-
-        function saveBusinessSettings() {
-            window.currentSellerData.storeName = document.getElementById('setStore').value;
-            window.currentSellerData.tradeLicense = document.getElementById('setLicense').value;
-            window.currentSellerData.name = document.getElementById('setName').value;
-            window.currentSellerData.address = document.getElementById('setAddress').value;
-            window.currentSellerData.whatsapp = document.getElementById('setWa').value;
-            localStorage.setItem('mme_active_seller', JSON.stringify(window.currentSellerData));
-            renderDashboard(window.currentSellerData);
-            showToast("Business Profile Saved Successfully!");
-        }
-
-        function savePaymentSettings() {
-            window.currentSellerData.payoutType = document.getElementById('setPayType').value;
-            window.currentSellerData.payoutAccount = document.getElementById('setPayAcc').value.trim();
-            localStorage.setItem('mme_active_seller', JSON.stringify(window.currentSellerData));
-            renderDashboard(window.currentSellerData);
-            closeSettingsModal();
-            showToast("Payment Info Saved Successfully!");
-        }
-
-        function verifyTwoStepAuth() {
-            let code = document.getElementById('authCodeInput').value.trim();
-            if(code.length !== 6) { alert("Please enter valid 6-digit code."); return; }
-            window.currentSellerData.verified = true;
-            localStorage.setItem('mme_active_seller', JSON.stringify(window.currentSellerData));
-            renderDashboard(window.currentSellerData);
-            switchSettingsTab('security');
-            showToast("Google Authenticator 2FA Enabled Successfully!");
-        }
-
-        function updateGraphData(period) {
-            let container = document.getElementById('graphContainerBars');
-            if(!container) return;
-            if(period === '1m') {
-                container.innerHTML = `<div class="bar-col"><div class="bar" style="height: 35px;"></div><span class="bar-label">W1</span></div><div class="bar-col"><div class="bar" style="height: 60px;"></div><span class="bar-label">W2</span></div><div class="bar-col"><div class="bar" style="height: 45px;"></div><span class="bar-label">W3</span></div><div class="bar-col"><div class="bar" style="height: 85px;"></div><span class="bar-label">W4</span></div>`;
-            } else if(period === '1y') {
-                container.innerHTML = `<div class="bar-col"><div class="bar" style="height: 40px;"></div><span class="bar-label">Q1</span></div><div class="bar-col"><div class="bar" style="height: 65px;"></div><span class="bar-label">Q2</span></div><div class="bar-col"><div class="bar" style="height: 95px;"></div><span class="bar-label">Q3</span></div><div class="bar-col"><div class="bar" style="height: 75px;"></div><span class="bar-label">Q4</span></div>`;
-            }
-            showToast("Analytics Updated (" + period.toUpperCase() + ")");
-        }
-
-        function logoutSession() {
-            localStorage.removeItem('mme_active_seller');
-            location.reload();
+        function handleGoogleSellerVerify() {
+            alert('Proceeding with Google Verification for Seller Account...');
         }
     </script>
 </body>
