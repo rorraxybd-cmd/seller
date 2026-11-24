@@ -50,7 +50,9 @@ self.addEventListener('fetch', (event) => {
       return fetch(event.request).then((networkResponse) => {
         return networkResponse;
       }).catch(() => {
-        if (event.request.headers.get('accept').includes('text/html')) {
+        // null চেক করে নিরাপদ করা হয়েছে
+        const acceptHeader = event.request.headers.get('accept') || '';
+        if (acceptHeader.includes('text/html')) {
           return caches.match('/index.html');
         }
       });
