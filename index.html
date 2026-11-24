@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 <title>Seller Ecosystem Portal - rorraxy</title>
 <link rel="icon" type="image/png" href="https://pub-508ef1e45bab487aadde85a1dba202c4.r2.dev/rorraxyfree/rorraxy.png">
+
+<!-- ================= PWA ও পারমিশন সেটআপ ================= -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#030305">
+<link rel="apple-touch-icon" href="https://pub-508ef1e45bab487aadde85a1dba202c4.r2.dev/rorraxyfree/rorraxy.png">
+<meta http-equiv="Permissions-Policy" content="camera=*, microphone=*, geolocation=*">
+<!-- ========================================================= -->
+
 <script src="/ecosystem-core.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -598,6 +606,21 @@ function renderCvPreview(data){document.getElementById('prevLogo').src=data.logo
 function switchToEditMode(){document.getElementById('profilePreviewSection').style.display='none';document.getElementById('businessInfoForm').style.display='block';document.getElementById('cancelEditBtn').style.display='block';document.getElementById('cardTitleText').innerText="EDIT PROFILE";}
 function cancelEditMode(){document.getElementById('businessInfoForm').style.display='none';document.getElementById('profilePreviewSection').style.display='block';document.getElementById('cardTitleText').innerText="SELLER PROFILE";}
 window.addEventListener('DOMContentLoaded',async()=>{populateCountrySelects();autoDetectCountryCode();if(isSellerVerifiedAndComplete()){const savedEmail=localStorage.getItem('rorraxy_seller_email')||"";if(savedEmail){try{const res=await fetch(`/api/seller?email=${encodeURIComponent(savedEmail)}`);const result=await res.json();if(result.success&&result.data&&result.data.length>0){const sellerData=result.data[0];renderCvPreview(sellerData);if(sellerData.admin_approval_status==='approved'){switchTab('dashboard');}else{showPendingPopup(sellerData.admin_approval_status||'pending');}return;}}catch(e){}}}else{const emailInput=document.getElementById('sellerEmail');const phoneInput=document.getElementById('sellerPhone');if(emailInput)emailInput.value="";if(phoneInput)phoneInput.value="";}});
+
+// ==========================================
+// PWA SERVICE WORKER REGISTRATION
+// ==========================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('Service Worker Registered Successfully');
+            })
+            .catch(error => {
+                console.log('Service Worker Registration Failed:', error);
+            });
+    });
+}
 </script>
 </body>
 </html>
